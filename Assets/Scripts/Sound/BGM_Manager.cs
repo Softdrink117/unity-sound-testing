@@ -158,7 +158,7 @@ namespace Softdrink{
 		}
 		#endif
 
-		// MAIN FUNCTIONS -------------------------------------------------------------------------------------------
+		// FADE FUNCTIONS -------------------------------------------------------------------------------------------
 
 		void FadeToNext(){
 			firstActive = !firstActive;
@@ -224,6 +224,8 @@ namespace Softdrink{
 			}
 		}
 
+		// PLAY / PAUSE --------------------------------------------------------------------------------------------------
+
 		void Play(int index){
 			if(sources.Count < index + 1) return;
 			if(sources[index] == null) return;
@@ -232,7 +234,8 @@ namespace Softdrink{
 			playingIndex = index;
 
 			_src.clip = sources[index].source;
-			_src.Play();
+			if(!_src.isPlaying) _src.Play();
+			else _src.UnPause();
 			if(enableCrossfades) _xsrc.Stop();
 
 			isPlaying = true;
