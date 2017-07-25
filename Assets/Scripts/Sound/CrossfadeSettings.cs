@@ -12,5 +12,8 @@ namespace Softdrink{
 
 		[TooltipAttribute("Gain curve for output edge.")]
 		public AnimationCurve gain2 = new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(1f, 1f));
+
+		[TooltipAttribute("When enabled, crossfaded songs will continue playing in the background after they've been faded to zero, instead of stopping.")]
+		public bool continuePlayInBG = true;
 	}
 }

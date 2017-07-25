@@ -182,7 +182,7 @@ namespace Softdrink{
 			_src.clip = sources[playingIndex].source;
 			playingName = sources[playingIndex].name;
 
-			_src.Play();
+			if(!_src.isPlaying || !crossfadeSettings.continuePlayInBG) _src.Play();
 
 			fadeStartTime = Time.unscaledTime;
 			fadeEndTime = Time.unscaledTime + crossfadeSettings.crossfadeDuration;
@@ -197,7 +197,7 @@ namespace Softdrink{
 				}
 				isFading = true;
 			}else if(Time.unscaledTime >= fadeEndTime && fadeEndTime > 0f){
-				_xsrc.Stop();
+				if(!crossfadeSettings.continuePlayInBG) _xsrc.Stop();
 				_xsrc.volume = 0.0f;
 
 				fadeStartTime = -5.0f;
