@@ -78,8 +78,14 @@ namespace Softdrink{
 		private AudioSource _src = null;	// Reference to the currently active AudioSource
 		private AudioSource _xsrc = null;	// Reference to currently inactive AudioSource
 
+		private bool firstActive = true;
+
 		private AudioSource _src0 = null;
 		private AudioSource _src1 = null;
+
+		// Timer values
+		private float fadeStartTime = -5.0f;
+		private float fadeEndTime = -5.0f;
 
 		// INIT -------------------------------------------------------------------------------------------------------
 
@@ -112,8 +118,10 @@ namespace Softdrink{
 				SetupAudioSource(_src1);
 			}
 
+			firstActive = true;
 			_src = _src0;
 			_xsrc = _src1;
+			_xsrc.volume = 0.0f;
 		}
 
 		void SetupAudioSource(AudioSource target){
@@ -128,10 +136,14 @@ namespace Softdrink{
 		void Update(){
 			// << SUPER DEBUG >>
 			if(Input.GetKeyDown(KeyCode.Space)){
-				playingIndex++;
-				if(playingIndex >= sources.Count) playingIndex = 0;
-				Play(playingIndex);
+				// playingIndex++;
+				// if(playingIndex >= sources.Count) playingIndex = 0;
+				// Play(playingIndex);
+
+				FadeToNext();
 			}
+
+			CheckExecuteFade();
 		}
 
 
@@ -145,6 +157,68 @@ namespace Softdrink{
 
 		// MAIN FUNCTIONS -------------------------------------------------------------------------------------------
 
+		void FadeToNext(){
+			firstActive = !firstActive;
+
+			fadingName = playingName;
+			fadingIndex = playingIndex;
+
+			playingIndex++;
+			if(playingIndex >= sources.Count) playingIndex = 0;
+
+			if(firstActive){
+				_src = _src0;
+				_xsrc = _src1;
+			}else{
+				_src = _src1;
+				_xsrc = _src0;
+			}
+
+			
+
+			_src.clip = sources[playingIndex].source;
+			playingName = sources[playingIndex].name;
+
+			_src.Play();
+
+			fadeStartTime = Time.unscaledTime;
+			fadeEndTime = Time.unscaledTime + crossfadeSettings.crossfadeDuration;
+		}
+
+		void CheckExecuteFade(){
+			if(Time.unscaledTime >= fadeStartTime && Time.unscaledTime <= fadeEndTime){
+				if(Time.unscaledTime < fadeEndTime){
+					FadeRoutine();
+				}
+				isFading = true;
+			}else if(Time.unscaledTime >= fadeEndTime && fadeEndTime > 0f){
+				_xsrc.Stop();
+				_xsrc.volume = 0.0f;
+
+				fadeStartTime = -5.0f;
+				fadeEndTime = -5.0f;
+
+				isFading = false;
+			}
+		}
+
+		float t = 0f;
+		void FadeRoutine(){
+			t = (Time.unscaledTime - fadeStartTime)/(crossfadeSettings.crossfadeDuration);
+
+			_src.volume = crossfadeSettings.gain2.Evaluate(t);
+			_xsrc.volume = crossfadeSettings.gain1.Evaluate(t);
+
+			if(t <= 0f){
+				_src.volume = 0f;
+				_xsrc.volume = 1f;
+			}
+			if(t >= 1.0f){
+				_src.volume = 1f;
+				_xsrc.volume = 0f;
+			}
+		}
+
 		void Play(int index){
 			if(sources.Count < index + 1) return;
 			if(sources[index] == null) return;
@@ -155,6 +229,8 @@ namespace Softdrink{
 			_src.clip = sources[index].source;
 			_src.Play();
 			_xsrc.Stop();
+
+			isPlaying = true;
 		}
 
 		void Pause(){
