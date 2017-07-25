@@ -120,8 +120,10 @@ namespace Softdrink{
 
 			firstActive = true;
 			_src = _src0;
-			_xsrc = _src1;
-			_xsrc.volume = 0.0f;
+			if(enableCrossfades){
+				_xsrc = _src1;
+				_xsrc.volume = 0.0f;
+			}
 		}
 
 		void SetupAudioSource(AudioSource target){
@@ -136,11 +138,12 @@ namespace Softdrink{
 		void Update(){
 			// << SUPER DEBUG >>
 			if(Input.GetKeyDown(KeyCode.Space)){
-				// playingIndex++;
-				// if(playingIndex >= sources.Count) playingIndex = 0;
-				// Play(playingIndex);
-
-				FadeToNext();
+				
+				if(enableCrossfades){
+					FadeToNext();
+				}else{
+					PlayNext();
+				}
 			}
 
 			CheckExecuteFade();
@@ -186,6 +189,8 @@ namespace Softdrink{
 		}
 
 		void CheckExecuteFade(){
+			if(!enableCrossfades) return;
+
 			if(Time.unscaledTime >= fadeStartTime && Time.unscaledTime <= fadeEndTime){
 				if(Time.unscaledTime < fadeEndTime){
 					FadeRoutine();
@@ -228,9 +233,15 @@ namespace Softdrink{
 
 			_src.clip = sources[index].source;
 			_src.Play();
-			_xsrc.Stop();
+			if(enableCrossfades) _xsrc.Stop();
 
 			isPlaying = true;
+		}
+
+		void PlayNext(){
+			playingIndex++;
+			if(playingIndex >= sources.Count) playingIndex = 0;
+			Play(playingIndex);
 		}
 
 		void Pause(){
