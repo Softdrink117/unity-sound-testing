@@ -33,6 +33,11 @@ namespace Softdrink{
 		[TooltipAttribute("READONLY: Is there any BGM playing?")]
 		public bool isPlaying = false;
 
+		[ReadOnlyAttribute]
+		[Range(0f,1f)]
+		[TooltipAttribute("READONLY: The current playback progress of the active BGM Source.")]
+		public float playbackProgress = 0.0f;
+
 
 		[HeaderAttribute("Crossfade Status")]
 
@@ -47,6 +52,11 @@ namespace Softdrink{
 		[ReadOnlyAttribute]
 		[TooltipAttribute("READONLY: Is a crossfade in progress?")]
 		public bool isFading = false;
+
+		[ReadOnlyAttribute]
+		[Range(0f,1f)]
+		[TooltipAttribute("READONLY: The current playback progress of the faded BGM Source.")]
+		public float fadedPlaybackProgress = 0.0f;
 
 
 		[HeaderAttribute("Sources")]
@@ -147,6 +157,7 @@ namespace Softdrink{
 			}
 
 			CheckExecuteFade();
+			UpdatePlayheads();
 		}
 
 
@@ -157,6 +168,15 @@ namespace Softdrink{
 			}
 		}
 		#endif
+
+		void UpdatePlayheads(){
+			playbackProgress = _src.time / _src.clip.length;
+			if(enableCrossfades){
+				if(_xsrc.isPlaying)
+					fadedPlaybackProgress = _xsrc.time / _xsrc.clip.length;
+				else fadedPlaybackProgress = 0f;
+			}
+		}
 
 		// FADE FUNCTIONS -------------------------------------------------------------------------------------------
 
