@@ -219,7 +219,8 @@ namespace Softdrink{
 			}else if(Time.unscaledTime >= fadeEndTime && fadeEndTime > 0f){
 				if(!crossfadeSettings.continuePlayInBG) _xsrc.Stop();
 				_xsrc.volume = 0.0f;
-
+				_src.volume = 1.0f;
+				
 				fadeStartTime = -5.0f;
 				fadeEndTime = -5.0f;
 
