@@ -293,6 +293,23 @@ namespace Softdrink{
 			if(sources.Count < index + 1) return;
 			if(sources[index] == null) return;
 
+			if(enableCrossfades){
+				firstActive = !firstActive;
+
+				fadingName = playingName;
+				fadingIndex = playingIndex;
+
+				if(firstActive){
+					_src = _src0;
+					_xsrc = _src1;
+				}else{
+					_src = _src1;
+					_xsrc = _src0;
+				}
+
+				_xsrcTrack = _srcTrack;
+			}
+
 			playingName = sources[index].name;
 			playingIndex = index;
 			_srcTrack = sources[index];
