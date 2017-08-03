@@ -88,6 +88,11 @@ namespace Softdrink{
 		private AudioSource _src = null;	// Reference to the currently active AudioSource
 		private AudioSource _xsrc = null;	// Reference to currently inactive AudioSource
 
+		[SerializeField]
+		private BGMSource _srcTrack = null;	// Reference to currently active BGMSource
+		[SerializeField]
+		private BGMSource _xsrcTrack = null;
+
 		private bool firstActive = true;
 
 		private AudioSource _src0 = null;
@@ -109,12 +114,14 @@ namespace Softdrink{
 				Destroy(gameObject);
 				Debug.LogError("ERROR! The BGM_Manager encountered another instance of BGM_Manager; it destroyed itself rather than overwrite the existing instance.", this);
 			}
-			DontDestroyOnLoad(transform.gameObject);
+			DontDestroyOnLoad(transform.root);
 
 			// Set up the basic properties of the Player_Manager			
 			Init();
 
-			if(playOnAwake) Play(playOnAwakeIndex);
+			// if(playOnAwake) Play(playOnAwakeIndex);
+			// if(playOnAwake) Play("BGM_Arcade");
+			if(playOnAwake) Play(0,1);
 		}
 
 		void Init(){
@@ -156,8 +163,10 @@ namespace Softdrink{
 				}
 			}
 
+			CheckLooping();
 			CheckExecuteFade();
 			UpdatePlayheads();
+
 		}
 
 
@@ -170,11 +179,43 @@ namespace Softdrink{
 		#endif
 
 		void UpdatePlayheads(){
-			playbackProgress = _src.time / _src.clip.length;
+			playbackProgress = _src.time /_src.clip.length;
 			if(enableCrossfades){
 				if(_xsrc.isPlaying)
 					fadedPlaybackProgress = _xsrc.time / _xsrc.clip.length;
 				else fadedPlaybackProgress = 0f;
+			}
+		}
+
+		// LOOPING --------------------------------------------------------------------------------------------------
+
+		void CheckLooping(){
+			CheckLoop(_src, _srcTrack);
+			if(enableCrossfades){
+				CheckLoop(_xsrc, _xsrcTrack);
+			}
+		}
+
+		void CheckLoop(AudioSource target, BGMSource track){
+			if(target == null || track == null) return;
+			switch(track.loopMode){
+				case BGMLoopMode.None:
+					break;
+				case BGMLoopMode.LoopEntire:
+					if(!target.loop) target.loop = true;
+					break;
+				case BGMLoopMode.LoopFromStart:
+					if(target.time >= track.source.length){
+						target.time = track.loopStartTime;
+						//target.SetScheduledEndTime(AudioSettings.dspTime + (track.source.length - track.loopStartTime));
+					}
+					break;
+				case BGMLoopMode.LoopToEnd:
+					if(target.time >= track.loopEndTime){
+						target.time = 0.0f;
+						//target.SetScheduledEndTime(AudioSettings.dspTime + (track.loopEndTime));
+					}
+					break;
 			}
 		}
 
@@ -197,7 +238,8 @@ namespace Softdrink{
 				_xsrc = _src0;
 			}
 
-			
+			_xsrcTrack = _srcTrack;
+			_srcTrack = sources[playingIndex];
 
 			_src.clip = sources[playingIndex].source;
 			playingName = sources[playingIndex].name;
@@ -220,7 +262,7 @@ namespace Softdrink{
 				if(!crossfadeSettings.continuePlayInBG) _xsrc.Stop();
 				_xsrc.volume = 0.0f;
 				_src.volume = 1.0f;
-				
+
 				fadeStartTime = -5.0f;
 				fadeEndTime = -5.0f;
 
@@ -253,6 +295,7 @@ namespace Softdrink{
 
 			playingName = sources[index].name;
 			playingIndex = index;
+			_srcTrack = sources[index];
 
 			_src.clip = sources[index].source;
 			if(!_src.isPlaying) _src.Play();
@@ -262,10 +305,33 @@ namespace Softdrink{
 			isPlaying = true;
 		}
 
+		void Play(int index0, int index1){
+			Play(index1);
+			Play(index0);
+		}
+
 		void PlayNext(){
 			playingIndex++;
 			if(playingIndex >= sources.Count) playingIndex = 0;
 			Play(playingIndex);
+		}
+
+		public static void PlayByIndex(int index){
+			Instance.Play(index);
+		}
+
+		void Play(string name){
+			for(int i = 0; i < sources.Count; i++){
+				if(sources[i].Name.Equals(name)){
+					playingIndex = i;
+					playingName = name;
+					Play(playingIndex);
+				}
+			}
+		}
+
+		public static void PlayByName(string name){
+			Instance.Play(name);
 		}
 
 		void Pause(){

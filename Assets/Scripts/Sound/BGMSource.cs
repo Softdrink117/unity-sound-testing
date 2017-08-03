@@ -16,7 +16,7 @@ namespace Softdrink{
 	public class BGMSource : ScriptableObject {
 
 		[TooltipAttribute("The String name that will be used to search for and reference this BGM Source.")]
-		public string name = "New BGM Source";
+		public string Name = "New BGM Source";
 
 		[TooltipAttribute("The AudioClip that this BGM Source reads from. \nShould mostly be set to either Compressed In Memory or Streaming Compression Mode.")]
 		public AudioClip source = null;
