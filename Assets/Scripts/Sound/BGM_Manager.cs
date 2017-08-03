@@ -121,7 +121,7 @@ namespace Softdrink{
 
 			// if(playOnAwake) Play(playOnAwakeIndex);
 			// if(playOnAwake) Play("BGM_Arcade");
-			if(playOnAwake) Play(0,1);
+			if(playOnAwake) Play("BGM_Arabesque", "BGM_Arcade");
 		}
 
 		void Init(){
@@ -322,6 +322,7 @@ namespace Softdrink{
 			isPlaying = true;
 		}
 
+		// Cues index1 and begins playing index0
 		void Play(int index0, int index1){
 			Play(index1);
 			Play(index0);
@@ -337,6 +338,10 @@ namespace Softdrink{
 			Instance.Play(index);
 		}
 
+		public static void PlayByIndex(int index0, int index1){
+			Instance.Play(index0, index1);
+		}
+
 		void Play(string name){
 			for(int i = 0; i < sources.Count; i++){
 				if(sources[i].Name.Equals(name)){
@@ -350,6 +355,17 @@ namespace Softdrink{
 		public static void PlayByName(string name){
 			Instance.Play(name);
 		}
+
+		void Play(string name0, string name1){
+			Play(name1);
+			Play(name0);
+		}
+
+		public static void PlayByName(string name0, string name1){
+			Instance.Play(name0, name1);
+		}
+
+		
 
 		void Pause(){
 			_src.Pause();
