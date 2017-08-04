@@ -267,15 +267,21 @@ namespace Softdrink{
 
 		// FADE TO A SPECIFIED TRACK
 		void FadeToLocal(int index){
-
+			if(!CheckIndexRange(index)) return;
 		}
 
 		void FadeToLocal(string name){
+			int t = FindSourceByName(name);
+			if(t == -1) return;
 
 		}
 
 		public static void FadeTo(int index){
 			Instance.FadeToLocal(index);
+		}
+
+		public static void FadeTo(string name){
+			Instance.FadeToLocal(name);
 		}
 
 
@@ -329,8 +335,7 @@ namespace Softdrink{
 		// PLAY --------------------------------------------------------------------------------------------------
 
 		void Play(int index){
-			if(sources.Count < index + 1) return;
-			if(sources[index] == null) return;
+			if(!CheckIndexRange(index)) return;
 
 			if(enableCrossfades){
 				
@@ -404,8 +409,7 @@ namespace Softdrink{
 
 		void Cue(int index){
 			if(!enableCrossfades) return;
-			if(sources.Count < index + 1) return;
-			if(sources[index] == null) return;
+			if(!CheckIndexRange(index)) return;
 
 			_xsrcTrack = sources[index];
 			fadingIndex = index;
@@ -440,6 +444,13 @@ namespace Softdrink{
 
 
 		// UTILITY / HELPER METHODS -------------------------------------------------------------------
+
+		bool CheckIndexRange(int index){
+			if(sources.Count < index + 1) return false;
+			if(sources[index] == null) return false;
+
+			return true;
+		}
 
 		int FindSourceByName(string name){
 			for(int i = 0; i < sources.Count; i++){
