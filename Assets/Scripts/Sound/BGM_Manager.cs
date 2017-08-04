@@ -67,6 +67,9 @@ namespace Softdrink{
 
 		[HeaderAttribute("Behvaior Options")]
 
+		[TooltipAttribute("Exit the loop at the end of this iteration, if applicable.")]
+		public bool exitLoop = false;
+
 		[TooltipAttribute("Enable or Disable Crossfades.")]
 		public bool enableCrossfades = true;
 
@@ -198,6 +201,14 @@ namespace Softdrink{
 
 		void CheckLoop(AudioSource target, BGMSource track){
 			if(target == null || track == null) return;
+			if(exitLoop){
+					if(target.time >= track.source.length){
+						exitLoop = false;
+						target.Stop();
+					}
+					if(target.loop) target.loop = false;
+					return;
+				}
 			switch(track.loopMode){
 				case BGMLoopMode.None:
 					if(target.loop) target.loop = false;
@@ -315,7 +326,7 @@ namespace Softdrink{
 			}
 		}
 
-		// PLAY / PAUSE --------------------------------------------------------------------------------------------------
+		// PLAY --------------------------------------------------------------------------------------------------
 
 		void Play(int index){
 			if(sources.Count < index + 1) return;
@@ -389,7 +400,7 @@ namespace Softdrink{
 			Instance.Play(name0, name1);
 		}
 
-		// CUEING ------------------------------------------------------------------------------------
+		// CUE, PAUSE, STOP, EXIT LOOP ------------------------------------------------------------------------------------
 
 		void Cue(int index){
 			if(!enableCrossfades) return;
@@ -405,9 +416,26 @@ namespace Softdrink{
 		}
 		
 
-		void Pause(){
+		void PauseLocal(){
 			_src.Pause();
 			if(isFading) _xsrc.Pause();
+		}
+
+		public static void Pause(){
+			Instance.PauseLocal();
+		}
+
+		void StopLocal(){
+			_src.Stop();
+			if(isFading) _xsrc.Stop();
+		}
+
+		public static void Stop(){
+			Instance.StopLocal();
+		}
+
+		public static void ExitLoop(){
+			Instance.exitLoop = true;
 		}
 
 
