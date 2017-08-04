@@ -33,7 +33,7 @@ namespace Softdrink{
 		[TooltipAttribute("READONLY: Is there any BGM playing?")]
 		public bool isPlaying = false;
 
-		[ReadOnlyAttribute]
+		//[ReadOnlyAttribute]
 		[Range(0f,1f)]
 		[TooltipAttribute("READONLY: The current playback progress of the active BGM Source.")]
 		public float playbackProgress = 0.0f;
@@ -53,7 +53,7 @@ namespace Softdrink{
 		[TooltipAttribute("READONLY: Is a crossfade in progress?")]
 		public bool isFading = false;
 
-		[ReadOnlyAttribute]
+		//[ReadOnlyAttribute]
 		[Range(0f,1f)]
 		[TooltipAttribute("READONLY: The current playback progress of the faded BGM Source.")]
 		public float fadedPlaybackProgress = 0.0f;
@@ -119,7 +119,8 @@ namespace Softdrink{
 
 			// if(playOnAwake) Play(playOnAwakeIndex);
 			// if(playOnAwake) Play("BGM_Arcade");
-			if(playOnAwake) Play("BGM_Arabesque", "BGM_Arcade");
+			// if(playOnAwake) Play("BGM_Arabesque", "BGM_Arcade");
+			if(playOnAwake) Play(0,1);
 		}
 
 		void Init(){
@@ -131,7 +132,6 @@ namespace Softdrink{
 			_src1 = gameObject.AddComponent<AudioSource>() as AudioSource;
 			SetupAudioSource(_src1);
 			
-
 			firstActive = true;
 			_src = _src0;
 			
@@ -152,8 +152,9 @@ namespace Softdrink{
 		void Update(){
 			// << SUPER DEBUG >>
 			if(Input.GetKeyDown(KeyCode.Space)){
-				FadeToNext();
+				//FadeToNext();
 				//PlayNext();
+				CrossfadeLocal();
 			}
 
 			CheckLooping();
@@ -252,7 +253,7 @@ namespace Softdrink{
 			_srcTrack = sources[playingIndex];
 
 			_src.clip = sources[playingIndex].source;
-			playingName = sources[playingIndex].name;
+			playingName = sources[playingIndex].Name;
 
 			if(!_src.isPlaying || !crossfadeSettings.continuePlayInBG) _src.Play();
 
@@ -296,7 +297,7 @@ namespace Softdrink{
 
 		// CROSSFADE BETWEEN ACTIVE AND CUED TRACKS
 		void CrossfadeLocal(){
-
+			FadeToLocal(fadingIndex, crossfadeSettings.crossfadeDuration);
 		}
 
 		public static void Crossfade(){
@@ -354,7 +355,7 @@ namespace Softdrink{
 
 			firstActive = !firstActive;
 
-			playingName = sources[index].name;
+			playingName = sources[index].Name;
 			playingIndex = index;
 			_srcTrack = sources[index];
 
@@ -368,8 +369,8 @@ namespace Softdrink{
 
 		// Cues index1 and begins playing index0
 		void Play(int index0, int index1){
-			Play(index1);
 			Play(index0);
+			CueLocal(index1);
 		}
 
 		void PlayNext(){
@@ -400,8 +401,8 @@ namespace Softdrink{
 		}
 
 		void Play(string name0, string name1){
-			Play(name1);
 			Play(name0);
+			CueLocal(name1);
 		}
 
 		public static void PlayByName(string name0, string name1){
@@ -410,7 +411,7 @@ namespace Softdrink{
 
 		// CUE, PAUSE, STOP, EXIT LOOP ------------------------------------------------------------------------------------
 
-		void Cue(int index){
+		void CueLocal(int index){
 			if(!CheckIndexRange(index)) return;
 
 			_xsrcTrack = sources[index];
@@ -419,6 +420,20 @@ namespace Softdrink{
 
 			_xsrc.Stop();
 			_xsrc.clip = _xsrcTrack.source;
+		}
+
+		void CueLocal(string name){
+			int t = FindSourceByName(name);
+			if(t == -1) return;
+			CueLocal(t);
+		}
+
+		public static void Cue(int index){
+			Instance.CueLocal(index);
+		}
+
+		public static void Cue(string name){
+			Instance.CueLocal(name);
 		}
 		
 
