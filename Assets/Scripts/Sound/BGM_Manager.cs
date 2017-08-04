@@ -153,7 +153,7 @@ namespace Softdrink{
 			// << SUPER DEBUG >>
 			if(Input.GetKeyDown(KeyCode.Space)){
 				FadeToNext();
-				
+				//PlayNext();
 			}
 
 			CheckLooping();
@@ -229,13 +229,22 @@ namespace Softdrink{
 
 		// FADE TO NEXT IN LIST ---------------------------------------
 		void FadeToNext(){
+			int t = playingIndex;
+			t++;
+			if(t >= sources.Count) t = 0;
+			FadeToLocal(t);
+		}
+
+		// FADE TO A SPECIFIED TRACK
+		void FadeToLocal(int index, float duration){
+			if(!CheckIndexRange(index)) return;
+
 			firstActive = !firstActive;
 
 			fadingName = playingName;
 			fadingIndex = playingIndex;
 
-			playingIndex++;
-			if(playingIndex >= sources.Count) playingIndex = 0;
+			playingIndex = index;
 
 			SwitchSources();
 
@@ -248,26 +257,40 @@ namespace Softdrink{
 			if(!_src.isPlaying || !crossfadeSettings.continuePlayInBG) _src.Play();
 
 			fadeStartTime = Time.unscaledTime;
-			fadeEndTime = Time.unscaledTime + crossfadeSettings.crossfadeDuration;
+			fadeEndTime = Time.unscaledTime + crossfadeSettings.crossfadeDuration;			
 		}
 
-		// FADE TO A SPECIFIED TRACK
 		void FadeToLocal(int index){
-			if(!CheckIndexRange(index)) return;
+			//if(!CheckIndexRange(index)) return;
+			FadeToLocal(index, crossfadeSettings.crossfadeDuration);
 		}
 
 		void FadeToLocal(string name){
 			int t = FindSourceByName(name);
 			if(t == -1) return;
+			FadeToLocal(t, crossfadeSettings.crossfadeDuration);
+		}
 
+		void FadeToLocal(string name, float duration){
+			int t = FindSourceByName(name);
+			if(t == -1) return;
+			FadeToLocal(t, duration);
 		}
 
 		public static void FadeTo(int index){
 			Instance.FadeToLocal(index);
 		}
 
+		public static void FadeTo(int index, float duration){
+			Instance.FadeToLocal(index, duration);
+		}
+
 		public static void FadeTo(string name){
 			Instance.FadeToLocal(name);
+		}
+
+		public static void FadeTo(string name, float duration){
+			Instance.FadeToLocal(name, duration);
 		}
 
 
@@ -321,15 +344,15 @@ namespace Softdrink{
 		void Play(int index){
 			if(!CheckIndexRange(index)) return;
 
-				fadingName = playingName;
-				fadingIndex = playingIndex;
+			fadingName = playingName;
+			fadingIndex = playingIndex;
 
-				SwitchSources();
-				MuteInactive();
+			SwitchSources();
+			MuteInactive();
 
-				_xsrcTrack = _srcTrack;
+			_xsrcTrack = _srcTrack;
 
-				firstActive = !firstActive;
+			firstActive = !firstActive;
 
 			playingName = sources[index].name;
 			playingIndex = index;
