@@ -70,9 +70,6 @@ namespace Softdrink{
 		[TooltipAttribute("Exit the loop at the end of this iteration, if applicable.")]
 		public bool exitLoop = false;
 
-		[TooltipAttribute("Enable or Disable Crossfades.")]
-		public bool enableCrossfades = true;
-
 		[SerializeField]
 		[TooltipAttribute("The Crossfade Settings preset to use during Crossfades.")]
 		private CrossfadeSettings crossfadeSettings;
@@ -91,9 +88,7 @@ namespace Softdrink{
 		private AudioSource _src = null;	// Reference to the currently active AudioSource
 		private AudioSource _xsrc = null;	// Reference to currently inactive AudioSource
 
-		[SerializeField]
 		private BGMSource _srcTrack = null;	// Reference to currently active BGMSource
-		[SerializeField]
 		private BGMSource _xsrcTrack = null;
 
 		private bool firstActive = true;
@@ -133,17 +128,16 @@ namespace Softdrink{
 			_src0 = gameObject.AddComponent<AudioSource>() as AudioSource;
 			SetupAudioSource(_src0);
 
-			if(enableCrossfades){
-				_src1 = gameObject.AddComponent<AudioSource>() as AudioSource;
-				SetupAudioSource(_src1);
-			}
+			_src1 = gameObject.AddComponent<AudioSource>() as AudioSource;
+			SetupAudioSource(_src1);
+			
 
 			firstActive = true;
 			_src = _src0;
-			if(enableCrossfades){
-				_xsrc = _src1;
-				_xsrc.volume = 0.0f;
-			}
+			
+			_xsrc = _src1;
+			_xsrc.volume = 0.0f;
+			
 		}
 
 		void SetupAudioSource(AudioSource target){
@@ -158,12 +152,8 @@ namespace Softdrink{
 		void Update(){
 			// << SUPER DEBUG >>
 			if(Input.GetKeyDown(KeyCode.Space)){
+				FadeToNext();
 				
-				if(enableCrossfades){
-					FadeToNext();
-				}else{
-					PlayNext();
-				}
 			}
 
 			CheckLooping();
@@ -183,20 +173,16 @@ namespace Softdrink{
 
 		void UpdatePlayheads(){
 			playbackProgress = _src.time /_src.clip.length;
-			if(enableCrossfades){
-				if(_xsrc.isPlaying)
-					fadedPlaybackProgress = _xsrc.time / _xsrc.clip.length;
-				else fadedPlaybackProgress = 0f;
-			}
+			if(_xsrc.isPlaying)
+				fadedPlaybackProgress = _xsrc.time / _xsrc.clip.length;
+			else fadedPlaybackProgress = 0f;
 		}
 
 		// LOOPING --------------------------------------------------------------------------------------------------
 
 		void CheckLooping(){
 			CheckLoop(_src, _srcTrack);
-			if(enableCrossfades){
-				CheckLoop(_xsrc, _xsrcTrack);
-			}
+			CheckLoop(_xsrc, _xsrcTrack);
 		}
 
 		void CheckLoop(AudioSource target, BGMSource track){
@@ -296,8 +282,6 @@ namespace Softdrink{
 
 		// EXECUTE FADES
 		void CheckExecuteFade(){
-			if(!enableCrossfades) return;
-
 			if(Time.unscaledTime >= fadeStartTime && Time.unscaledTime <= fadeEndTime){
 				if(Time.unscaledTime < fadeEndTime){
 					FadeRoutine();
@@ -337,9 +321,6 @@ namespace Softdrink{
 		void Play(int index){
 			if(!CheckIndexRange(index)) return;
 
-			if(enableCrossfades){
-				
-
 				fadingName = playingName;
 				fadingIndex = playingIndex;
 
@@ -349,7 +330,6 @@ namespace Softdrink{
 				_xsrcTrack = _srcTrack;
 
 				firstActive = !firstActive;
-			}
 
 			playingName = sources[index].name;
 			playingIndex = index;
@@ -358,7 +338,7 @@ namespace Softdrink{
 			_src.clip = sources[index].source;
 			if(!_src.isPlaying) _src.Play();
 			else _src.UnPause();
-			if(enableCrossfades) _xsrc.Stop();
+			_xsrc.Stop();
 
 			isPlaying = true;
 		}
@@ -408,7 +388,6 @@ namespace Softdrink{
 		// CUE, PAUSE, STOP, EXIT LOOP ------------------------------------------------------------------------------------
 
 		void Cue(int index){
-			if(!enableCrossfades) return;
 			if(!CheckIndexRange(index)) return;
 
 			_xsrcTrack = sources[index];
