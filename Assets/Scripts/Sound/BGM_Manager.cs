@@ -120,8 +120,8 @@ namespace Softdrink{
 			Init();
 
 			// if(playOnAwake) Play(playOnAwakeIndex);
-			// if(playOnAwake) Play("BGM_Arcade");
-			if(playOnAwake) Play("BGM_Arabesque", "BGM_Arcade");
+			 if(playOnAwake) Play("BGM_Arcade");
+			//if(playOnAwake) Play("BGM_Arabesque", "BGM_Arcade");
 		}
 
 		void Init(){
@@ -221,6 +221,7 @@ namespace Softdrink{
 
 		// FADE FUNCTIONS -------------------------------------------------------------------------------------------
 
+		// FADE TO NEXT IN LIST ---------------------------------------
 		void FadeToNext(){
 			firstActive = !firstActive;
 
@@ -230,13 +231,7 @@ namespace Softdrink{
 			playingIndex++;
 			if(playingIndex >= sources.Count) playingIndex = 0;
 
-			if(firstActive){
-				_src = _src0;
-				_xsrc = _src1;
-			}else{
-				_src = _src1;
-				_xsrc = _src0;
-			}
+			SwitchSources();
 
 			_xsrcTrack = _srcTrack;
 			_srcTrack = sources[playingIndex];
@@ -250,6 +245,30 @@ namespace Softdrink{
 			fadeEndTime = Time.unscaledTime + crossfadeSettings.crossfadeDuration;
 		}
 
+		// FADE TO A SPECIFIED TRACK
+		void FadeToLocal(int index){
+
+		}
+
+		void FadeToLocal(string name){
+
+		}
+
+		public static void FadeTo(int index){
+			Instance.FadeToLocal(index);
+		}
+
+
+		// CROSSFADE BETWEEN ACTIVE AND CUED TRACKS
+		void CrossfadeLocal(){
+
+		}
+
+		public static void Crossfade(){
+			Instance.CrossfadeLocal();
+		}
+
+		// EXECUTE FADES
 		void CheckExecuteFade(){
 			if(!enableCrossfades) return;
 
@@ -294,20 +313,16 @@ namespace Softdrink{
 			if(sources[index] == null) return;
 
 			if(enableCrossfades){
-				firstActive = !firstActive;
+				
 
 				fadingName = playingName;
 				fadingIndex = playingIndex;
 
-				if(firstActive){
-					_src = _src0;
-					_xsrc = _src1;
-				}else{
-					_src = _src1;
-					_xsrc = _src0;
-				}
+				SwitchSources();
 
 				_xsrcTrack = _srcTrack;
+
+				firstActive = !firstActive;
 			}
 
 			playingName = sources[index].name;
@@ -343,12 +358,11 @@ namespace Softdrink{
 		}
 
 		void Play(string name){
-			for(int i = 0; i < sources.Count; i++){
-				if(sources[i].Name.Equals(name)){
-					playingIndex = i;
-					playingName = name;
-					Play(playingIndex);
-				}
+			int t = FindSourceByName(name);
+			if(t != -1){
+				playingIndex = t;
+				playingName = name;
+				Play(playingIndex);
 			}
 		}
 
@@ -365,6 +379,20 @@ namespace Softdrink{
 			Instance.Play(name0, name1);
 		}
 
+		// CUEING ------------------------------------------------------------------------------------
+
+		void Cue(int index){
+			if(!enableCrossfades) return;
+			if(sources.Count < index + 1) return;
+			if(sources[index] == null) return;
+
+			_xsrcTrack = sources[index];
+			fadingIndex = index;
+			fadingName = _xsrcTrack.Name;
+
+			_xsrc.Stop();
+			_xsrc.clip = _xsrcTrack.source;
+		}
 		
 
 		void Pause(){
@@ -373,6 +401,27 @@ namespace Softdrink{
 		}
 
 
+		// UTILITY / HELPER METHODS -------------------------------------------------------------------
+
+		int FindSourceByName(string name){
+			for(int i = 0; i < sources.Count; i++){
+				if(sources[i].Name.Equals(name)){
+					return i;
+				}
+			}
+
+			return -1;
+		}
+
+		void SwitchSources(){
+			if(firstActive){
+				_src = _src0;
+				_xsrc = _src1;
+			}else{
+				_src = _src1;
+				_xsrc = _src0;
+			}
+		}
 
 	}
 }
