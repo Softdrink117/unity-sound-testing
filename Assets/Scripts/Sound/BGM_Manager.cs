@@ -120,8 +120,8 @@ namespace Softdrink{
 			Init();
 
 			// if(playOnAwake) Play(playOnAwakeIndex);
-			 if(playOnAwake) Play("BGM_Arcade");
-			//if(playOnAwake) Play("BGM_Arabesque", "BGM_Arcade");
+			// if(playOnAwake) Play("BGM_Arcade");
+			if(playOnAwake) Play("BGM_Arabesque", "BGM_Arcade");
 		}
 
 		void Init(){
@@ -200,20 +200,29 @@ namespace Softdrink{
 			if(target == null || track == null) return;
 			switch(track.loopMode){
 				case BGMLoopMode.None:
+					if(target.loop) target.loop = false;
 					break;
 				case BGMLoopMode.LoopEntire:
 					if(!target.loop) target.loop = true;
 					break;
 				case BGMLoopMode.LoopFromStart:
+					if(target.loop) target.loop = false;
 					if(target.time >= track.source.length){
 						target.time = track.loopStartTime;
 						//target.SetScheduledEndTime(AudioSettings.dspTime + (track.source.length - track.loopStartTime));
 					}
 					break;
 				case BGMLoopMode.LoopToEnd:
+					if(target.loop) target.loop = false;
 					if(target.time >= track.loopEndTime){
 						target.time = 0.0f;
 						//target.SetScheduledEndTime(AudioSettings.dspTime + (track.loopEndTime));
+					}
+					break;
+				case BGMLoopMode.LoopFromStartToEnd:
+					if(target.loop) target.loop = false;
+					if(target.time >= track.loopEndTime){
+						target.time = track.loopStartTime;
 					}
 					break;
 			}
@@ -319,6 +328,7 @@ namespace Softdrink{
 				fadingIndex = playingIndex;
 
 				SwitchSources();
+				MuteInactive();
 
 				_xsrcTrack = _srcTrack;
 
@@ -421,6 +431,11 @@ namespace Softdrink{
 				_src = _src1;
 				_xsrc = _src0;
 			}
+		}
+
+		void MuteInactive(){
+			_src.volume = 1.0f;
+			_xsrc.volume = 0.0f;
 		}
 
 	}
