@@ -18,6 +18,13 @@ namespace Softdrink{
 		[TooltipAttribute("The String name that will be used to search for and reference this BGM Source.")]
 		public string Name = "New BGM Source";
 
+		[TooltipAttribute("The Descriptive Name that will be exposed to the Player or in sound test menus. This might be the actual song or track title, for example.")]
+		public string descName = "Track Title";
+
+		[TooltipAttribute("An optional Description for this BGMSource. This could be used for a Sound Test menu, for example.")]
+		[MultilineAttribute(5)]
+		public string description = "";
+
 		[TooltipAttribute("The AudioClip that this BGM Source reads from. \nShould mostly be set to either Compressed In Memory or Streaming Compression Mode.")]
 		public AudioClip source = null;
 

@@ -494,5 +494,31 @@ namespace Softdrink{
 			_xsrc.volume = 0.0f;
 		}
 
+		// GETTERS / SETTERS ----------------------------------------------------------------------------
+
+		string[] ListNames(){
+			List<string> names = new List<string>();
+			for(int i = 0; i < sources.Count; i++){
+				names.Add(sources[i].Name);
+			}
+			return names.ToArray();
+		}
+
+		string[] ListDescNames(){
+			List<string> names = new List<string>();
+			for(int i = 0; i < sources.Count; i++){
+				names.Add(sources[i].descName);
+			}
+			return names.ToArray();
+		}
+
+		public static string[] ListTracks(){
+			return Instance.ListNames();
+		}
+
+		public static string[] ListTracksDesc(){
+			return Instance.ListDescNames();
+		}
+
 	}
 }
