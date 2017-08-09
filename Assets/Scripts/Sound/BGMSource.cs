@@ -10,6 +10,24 @@ namespace Softdrink{
 		LoopFromStartToEnd,
 	};
 
+	// A Struct that contains basic info about a BGM Source track;
+	// used for passing info conveniently into a Tracklist or Sound 
+	// Test type setup.
+	[System.Serializable]
+	public struct BGMTrackInfo{
+		public string Name;
+		public string descName;
+		public string description;
+		public float length;
+
+		public BGMTrackInfo(string NameIn, string descNameIn, string descIn, float lengthIn){
+			Name = NameIn;
+			descName = descNameIn;
+			description = descIn;
+			length = lengthIn;
+		}
+	}
+
 	// A ScriptableObejct designed to store information about BGM songs, etc. for playback and looping
 	// Designed to be flexible and modular
 	[CreateAssetMenu(menuName = "Sound/ BGM Source")]
@@ -47,6 +65,13 @@ namespace Softdrink{
 
 		public void Validate(){
 			if(loopEndTime < loopStartTime) loopEndTime = loopStartTime + 0.001f;
+		}
+
+		public BGMTrackInfo GetTrackInfo(){
+			if(source == null){
+				return new BGMTrackInfo("ERROR", "ERROR", "ERROR: Null reference source clip.", 0.0f);
+			}
+			return new BGMTrackInfo(Name, descName, description, source.length);
 		}	
 		
 	}

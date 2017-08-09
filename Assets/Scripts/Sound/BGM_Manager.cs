@@ -12,7 +12,7 @@ namespace Softdrink{
 	// Can reference a playlist of BGM Source files
 
 	// PERSISTS BETWEEN SCENES
-	//[RequireComponent(typeof(AudioSource))]
+	[AddComponentMenu("Scripts/Sound/BGM Manager")]
 	public class BGM_Manager : MonoBehaviour {
 
 		// Singleton Instance
@@ -518,6 +518,18 @@ namespace Softdrink{
 
 		public static string[] ListTracksDesc(){
 			return Instance.ListDescNames();
+		}
+
+		BGMTrackInfo[] ListInfo(){
+			List<BGMTrackInfo> info = new List<BGMTrackInfo>();
+			for(int i = 0; i < sources.Count; i++){
+				info.Add(sources[i].GetTrackInfo());
+			}
+			return info.ToArray();
+		}
+
+		public static BGMTrackInfo[] ListTrackInfo(){
+			return Instance.ListInfo();
 		}
 
 	}

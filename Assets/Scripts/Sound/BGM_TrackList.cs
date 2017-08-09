@@ -2,17 +2,14 @@
 using System.Collections;
 
 namespace Softdrink{
+	[AddComponentMenu("Scripts/Sound/BGM Tracklist")]
 	public class BGM_TrackList : MonoBehaviour {
 
-		[TooltipAttribute("A list of all track names from the BGM_Manager.")]
-		public string[] tracklist;
-
-		[TooltipAttribute("A list of all descriptive names from the BGM_Manager.")]
-		public string[] tracklistDesc;
+		[TooltipAttribute("A list of all BGMTrackInfo structs from the BGM_Manager.")]
+		public BGMTrackInfo[] trackInfo;
 
 		void Start(){
-			tracklist = BGM_Manager.ListTracks();
-			tracklistDesc = BGM_Manager.ListTracksDesc();
+			trackInfo = BGM_Manager.ListTrackInfo();
 		}
 	}
 }
