@@ -120,7 +120,8 @@ namespace Softdrink{
 			// if(playOnAwake) Play(playOnAwakeIndex);
 			// if(playOnAwake) Play("BGM_Arcade");
 			// if(playOnAwake) Play("BGM_Arabesque", "BGM_Arcade");
-			if(playOnAwake) Play(0,1);
+			// if(playOnAwake) Play(1,0);
+			if(playOnAwake) FadeInLocal(1, 8.0f);
 		}
 
 		void Init(){
@@ -155,6 +156,7 @@ namespace Softdrink{
 				//FadeToNext();
 				//PlayNext();
 				CrossfadeLocal();
+				//FadeToLocal(fadingIndex, 3.0f);
 			}
 
 			CheckLooping();
@@ -228,6 +230,109 @@ namespace Softdrink{
 
 		// FADE FUNCTIONS -------------------------------------------------------------------------------------------
 
+		bool isCrossfade = false;
+
+		// EXECUTE FADES
+		void CheckExecuteFade(){
+			if(Time.unscaledTime >= fadeStartTime && Time.unscaledTime <= fadeEndTime){
+				if(Time.unscaledTime < fadeEndTime){
+					if(isCrossfade) CrossfadeRoutine();
+					else FadeRoutine();
+				}
+				isFading = true;
+			}else if(Time.unscaledTime >= fadeEndTime && fadeEndTime > 0f){
+				if(isCrossfade) EndCrossfade();
+				else EndFade();
+			}
+		}
+
+		float t = 0f;
+		bool fadingIn = true;
+
+		void FadeRoutine(){
+			t = (Time.unscaledTime - fadeStartTime)/(fadeEndTime - fadeStartTime);
+
+			if(fadingIn) _src.volume = crossfadeSettings.fadeIn.Evaluate(t);
+			else _src.volume = crossfadeSettings.fadeOut.Evaluate(t);
+
+			if(t <= 0f){
+				if(fadingIn) _src.volume = 0.0f;
+				else _src.volume = 1.0f;
+			}
+			if(t >= 1.0f){
+				if(fadingIn) _src.volume = 1.0f;
+				else _src.volume = 0.0f;
+			}
+		}
+
+		void EndFade(){
+			if(fadingIn){
+				_src.volume = 1.0f;
+				_xsrc.volume = 0.0f;
+			}else{
+				_src.volume = 0.0f;
+				_xsrc.volume = 0.0f;
+			}
+
+			if(!crossfadeSettings.continuePlayInBG) _xsrc.Stop();
+
+			fadeStartTime = -5.0f;
+			fadeEndTime = -5.0f;
+
+			isFading = false;
+			isCrossfade = false;
+		}
+
+		void CrossfadeRoutine(){
+			t = (Time.unscaledTime - fadeStartTime)/(fadeEndTime - fadeStartTime);
+
+			_src.volume = crossfadeSettings.gain2.Evaluate(t);
+			_xsrc.volume = crossfadeSettings.gain1.Evaluate(t);
+
+			if(t <= 0f){
+				_src.volume = 0f;
+				_xsrc.volume = 1f;
+			}
+			if(t >= 1.0f){
+				_src.volume = 1f;
+				_xsrc.volume = 0f;
+			}
+		}
+
+		void EndCrossfade(){
+			if(!crossfadeSettings.continuePlayInBG) _xsrc.Stop();
+			_xsrc.volume = 0.0f;
+			_src.volume = 1.0f;
+
+			fadeStartTime = -5.0f;
+			fadeEndTime = -5.0f;
+
+			isFading = false;
+			isCrossfade = false;
+		}
+
+		// FADE IN / OUT FUNCTIONS ------------------------------------
+
+		void FadeInLocal(int index, float duration){
+			if(!CheckIndexRange(index)) return;
+			playingIndex = index;
+			_srcTrack = sources[playingIndex];
+			_src.clip = sources[playingIndex].source;
+			playingName = sources[playingIndex].Name;
+
+			if(!_src.isPlaying || !crossfadeSettings.continuePlayInBG) _src.Play();
+			_src.volume = 0.0f;
+
+			fadeStartTime = Time.unscaledTime;
+			fadeEndTime = Time.unscaledTime + duration;
+
+			isFading = true;
+			isCrossfade = false;
+			fadingIn = true;
+		}
+
+		// CROSSFADE FUNCTIONS --------------------------------------------------------------------------------------
+
 		// FADE TO NEXT IN LIST ---------------------------------------
 		void FadeToNext(){
 			int t = playingIndex;
@@ -258,11 +363,12 @@ namespace Softdrink{
 			if(!_src.isPlaying || !crossfadeSettings.continuePlayInBG) _src.Play();
 
 			fadeStartTime = Time.unscaledTime;
-			fadeEndTime = Time.unscaledTime + crossfadeSettings.crossfadeDuration;			
+			fadeEndTime = Time.unscaledTime + duration;
+			
+			isCrossfade = true;
 		}
 
 		void FadeToLocal(int index){
-			//if(!CheckIndexRange(index)) return;
 			FadeToLocal(index, crossfadeSettings.crossfadeDuration);
 		}
 
@@ -302,42 +408,6 @@ namespace Softdrink{
 
 		public static void Crossfade(){
 			Instance.CrossfadeLocal();
-		}
-
-		// EXECUTE FADES
-		void CheckExecuteFade(){
-			if(Time.unscaledTime >= fadeStartTime && Time.unscaledTime <= fadeEndTime){
-				if(Time.unscaledTime < fadeEndTime){
-					FadeRoutine();
-				}
-				isFading = true;
-			}else if(Time.unscaledTime >= fadeEndTime && fadeEndTime > 0f){
-				if(!crossfadeSettings.continuePlayInBG) _xsrc.Stop();
-				_xsrc.volume = 0.0f;
-				_src.volume = 1.0f;
-
-				fadeStartTime = -5.0f;
-				fadeEndTime = -5.0f;
-
-				isFading = false;
-			}
-		}
-
-		float t = 0f;
-		void FadeRoutine(){
-			t = (Time.unscaledTime - fadeStartTime)/(crossfadeSettings.crossfadeDuration);
-
-			_src.volume = crossfadeSettings.gain2.Evaluate(t);
-			_xsrc.volume = crossfadeSettings.gain1.Evaluate(t);
-
-			if(t <= 0f){
-				_src.volume = 0f;
-				_xsrc.volume = 1f;
-			}
-			if(t >= 1.0f){
-				_src.volume = 1f;
-				_xsrc.volume = 0f;
-			}
 		}
 
 		// PLAY --------------------------------------------------------------------------------------------------
