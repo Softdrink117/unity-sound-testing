@@ -331,6 +331,38 @@ namespace Softdrink{
 			fadingIn = true;
 		}
 
+		void FadeInLocal(int index){
+			FadeInLocal(index, crossfadeSettings.fadeDuration);
+		}
+
+		void FadeInLocal(string name){
+			int t = FindSourceByName(name);
+			if(t == -1) return;
+			FadeInLocal(t, crossfadeSettings.fadeDuration);
+		}
+
+		void FadeInLocal(string name, float duration){
+			int t = FindSourceByName(name);
+			if(t == -1) return;
+			FadeInLocal(t, duration);
+		}
+
+		public static void FadeIn(int index){
+			Instance.FadeInLocal(index);
+		}
+
+		public static void FadeIn(int index, float duration){
+			Instance.FadeInLocal(index, duration);
+		}
+
+		public static void FadeIn(string name){
+			Instance.FadeInLocal(name);
+		}
+
+		public static void FadeIn(string name, float duration){
+			Instance.FadeInLocal(name, duration);
+		}
+
 		// CROSSFADE FUNCTIONS --------------------------------------------------------------------------------------
 
 		// FADE TO NEXT IN LIST ---------------------------------------
