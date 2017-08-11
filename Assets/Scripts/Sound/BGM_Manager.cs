@@ -121,7 +121,7 @@ namespace Softdrink{
 			// if(playOnAwake) Play("BGM_Arcade");
 			// if(playOnAwake) Play("BGM_Arabesque", "BGM_Arcade");
 			// if(playOnAwake) Play(1,0);
-			if(playOnAwake) FadeInLocal(1, 8.0f);
+			if(playOnAwake) FadeOutLocal(1, 8.0f);
 		}
 
 		void Init(){
@@ -313,6 +313,7 @@ namespace Softdrink{
 
 		// FADE IN / OUT FUNCTIONS ------------------------------------
 
+		// FADE IN ----------------------------------------------------
 		void FadeInLocal(int index, float duration){
 			if(!CheckIndexRange(index)) return;
 			playingIndex = index;
@@ -361,6 +362,57 @@ namespace Softdrink{
 
 		public static void FadeIn(string name, float duration){
 			Instance.FadeInLocal(name, duration);
+		}
+
+		// FADE OUT ----------------------------------------------------
+		void FadeOutLocal(int index, float duration){
+			if(!CheckIndexRange(index)) return;
+			playingIndex = index;
+			_srcTrack = sources[playingIndex];
+			_src.clip = sources[playingIndex].source;
+			playingName = sources[playingIndex].Name;
+
+			if(!_src.isPlaying || !crossfadeSettings.continuePlayInBG) _src.Play();
+			_src.volume = 1.0f;
+
+			fadeStartTime = Time.unscaledTime;
+			fadeEndTime = Time.unscaledTime + duration;
+
+			isFading = true;
+			isCrossfade = false;
+			fadingIn = false;
+		}
+
+		void FadeOutLocal(int index){
+			FadeOutLocal(index, crossfadeSettings.fadeDuration);
+		}
+
+		void FadeOutLocal(string name){
+			int t = FindSourceByName(name);
+			if(t == -1) return;
+			FadeOutLocal(t, crossfadeSettings.fadeDuration);
+		}
+
+		void FadeOutLocal(string name, float duration){
+			int t = FindSourceByName(name);
+			if(t == -1) return;
+			FadeOutLocal(t, duration);
+		}
+
+		public static void FadeOut(int index){
+			Instance.FadeOutLocal(index);
+		}
+
+		public static void FadeOut(int index, float duration){
+			Instance.FadeOutLocal(index, duration);
+		}
+
+		public static void FadeOut(string name){
+			Instance.FadeOutLocal(name);
+		}
+
+		public static void FadeOut(string name, float duration){
+			Instance.FadeOutLocal(name, duration);
 		}
 
 		// CROSSFADE FUNCTIONS --------------------------------------------------------------------------------------
