@@ -117,11 +117,11 @@ namespace Softdrink{
 			// Set up the basic properties of the Player_Manager			
 			Init();
 
-			// if(playOnAwake) Play(playOnAwakeIndex);
+			if(playOnAwake) Play(playOnAwakeIndex);
 			// if(playOnAwake) Play("BGM_Arcade");
 			// if(playOnAwake) Play("BGM_Arabesque", "BGM_Arcade");
 			// if(playOnAwake) Play(1,0);
-			if(playOnAwake) FadeOutLocal(1, 8.0f);
+			// if(playOnAwake) FadeOutLocal(1, 8.0f);
 		}
 
 		void Init(){
@@ -483,7 +483,6 @@ namespace Softdrink{
 		public static void FadeTo(string name, float duration){
 			Instance.FadeToLocal(name, duration);
 		}
-
 
 		// CROSSFADE BETWEEN ACTIVE AND CUED TRACKS
 		void CrossfadeLocal(){
