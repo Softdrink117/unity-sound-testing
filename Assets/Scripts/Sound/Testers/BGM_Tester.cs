@@ -29,11 +29,13 @@ namespace Softdrink{
 
 		[ContextMenu("Play Name")]
 		public void PlayName(){
+			// Debug.Log("PlayName", this);
 			BGM_Manager.PlayByName(playName);
 		}
 
 		[ContextMenu("Play Index")]
 		public void PlayIndex(){
+			// Debug.Log("PlayIndex", this);
 			BGM_Manager.PlayByIndex(playIndex);
 		}
 
@@ -41,6 +43,7 @@ namespace Softdrink{
 
 		[ContextMenu("Crossfade")]
 		public void Crossfade(){
+			// Debug.Log("Crossfade", this);
 			BGM_Manager.Crossfade();
 		}
 		
