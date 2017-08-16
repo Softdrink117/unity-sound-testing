@@ -77,6 +77,24 @@ namespace Softdrink{
 					Debug.LogError("ERROR! Volume_Manager was not properly initialized!");
 				#endif
 			}
+
+			if(initialized) GetInitialValues();
+		}
+
+		// Load the values from somewhere. Current behavior loads from the Mixer,
+		// but in a proper game, would probably read from a .cfg file containing
+		// volume settings as defined by user.
+		void GetInitialValues(){
+			// LOAD FROM CFG FILE or PLAYERPREFS, etc.
+			//LoadFromFileTesterHurDurr();
+			GetFromMixer();
+		}
+
+		void GetFromMixer(){
+			settings.mixer.GetFloat(settings.masterParameter, out masterVolume);
+			settings.mixer.GetFloat(settings.musicParameter, out musicVolume);
+			settings.mixer.GetFloat(settings.sfxParameter, out sfxVolume);
+			settings.mixer.GetFloat(settings.voiceParameter, out voiceVolume);
 		}
 		
 		void Update () {
@@ -102,17 +120,17 @@ namespace Softdrink{
 
 		public void SetMaster(float volume){
 			if(!initialized) return;
+			masterVolume = volume;
 			settings.mixer.SetFloat(settings.masterParameter, volume);
 		}
 
 		public static void SetMasterVol(float volume){
-			Instance.masterVolume = volume;
 			Instance.SetMaster(volume);
 		}
 
 		public void MasterMute(){
 			masterMute = !masterMute;
-			if(masterMute) SetMaster(-80);
+			if(masterMute) settings.mixer.SetFloat(settings.masterParameter, -80f);
 			else SetMaster(masterVolume);
 		}
 
@@ -124,17 +142,17 @@ namespace Softdrink{
 
 		public void SetMusic(float volume){
 			if(!initialized) return;
+			musicVolume = volume;
 			settings.mixer.SetFloat(settings.musicParameter, volume);
 		}
 
 		public static void SetMusicVol(float volume){
-			Instance.musicVolume = volume;
 			Instance.SetMusic(volume);
 		}
 
 		public void MusicMute(){
 			musicMute = !musicMute;
-			if(musicMute) SetMusic(-80);
+			if(musicMute) settings.mixer.SetFloat(settings.musicParameter, -80f);
 			else SetMusic(musicVolume);
 		}
 
@@ -146,17 +164,17 @@ namespace Softdrink{
 
 		public void SetSFX(float volume){
 			if(!initialized) return;
+			sfxVolume = volume;
 			settings.mixer.SetFloat(settings.sfxParameter, volume);
 		}
 
 		public static void SetSFXVol(float volume){
-			Instance.sfxVolume = volume;
 			Instance.SetSFX(volume);
 		}
 
 		public void SFXMute(){
 			sfxMute = !sfxMute;
-			if(sfxMute) SetSFX(-80);
+			if(sfxMute) settings.mixer.SetFloat(settings.sfxParameter, -80f);
 			else SetSFX(sfxVolume);
 		}
 
@@ -168,17 +186,17 @@ namespace Softdrink{
 
 		public void SetVoice(float volume){
 			if(!initialized) return;
+			voiceVolume = volume;
 			settings.mixer.SetFloat(settings.voiceParameter, volume);
 		}
 
 		public static void SetVoiceVol(float volume){
-			Instance.voiceVolume = volume;
 			Instance.SetVoice(volume);
 		}
 
 		public void VoiceMute(){
 			voiceMute = !voiceMute;
-			if(voiceMute) SetVoice(-80);
+			if(voiceMute) settings.mixer.SetFloat(settings.voiceParameter, -80f);
 			else SetVoice(voiceVolume);
 		}
 
