@@ -2,7 +2,7 @@
 using System.Collections;
 
 namespace Softdrink{
-	[CreateAssetMenu(menuName = "Sound/ Crossfade Settings")]
+	[CreateAssetMenu(menuName = "Sound/Crossfade Settings")]
 	public class CrossfadeSettings : ScriptableObject {
 
 		[HeaderAttribute("Crossfades")]

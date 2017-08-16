@@ -30,7 +30,7 @@ namespace Softdrink{
 
 	// A ScriptableObejct designed to store information about BGM songs, etc. for playback and looping
 	// Designed to be flexible and modular
-	[CreateAssetMenu(menuName = "Sound/ BGM Source")]
+	[CreateAssetMenu(menuName = "Sound/BGM Source")]
 	public class BGMSource : ScriptableObject {
 
 		[TooltipAttribute("The String name that will be used to search for and reference this BGM Source.")]
