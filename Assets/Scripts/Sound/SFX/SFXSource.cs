@@ -16,5 +16,9 @@ namespace Softdrink{
 		[TooltipAttribute("Playback settings for this SFXSource.")]
 		public SFXPlaybackSettings settings;
 
+		public AudioClip GetClip(){
+			return sources[Random.Range(0,sources.Length)];
+		}
+
 	}
 }

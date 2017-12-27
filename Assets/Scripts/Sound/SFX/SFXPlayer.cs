@@ -31,14 +31,25 @@ namespace Softdrink{
 
 		///// MAIN METHODS
 
+		// Apply properties to the AudioSource
+		void ApplyProperties(){
+			_src.pitch = SFX.settings.GetPitch();
+			_src.loop = SFX.settings.loop;
+			_src.spatialBlend = SFX.settings.spatial;
+		}
+
 		// Play the current selected SFX
 		public void Play(){
+			ApplyProperties();
+			_src.clip = SFX.GetClip();
 			_src.Play();
 		}
 
 		// Play the current selected SFX as a One Shot
 		public void PlayOneShot(){
-			_src.PlayOneShot(SFX.sources[0], SFX.settings.volume);
+			ApplyProperties();
+			// _src.PlayOneShot(SFX.sources[0], SFX.settings.GetVolume());
+			_src.PlayOneShot(SFX.GetClip(), SFX.settings.GetVolume());
 		}
 
 		// Stop playing, if not in One Shot mode
