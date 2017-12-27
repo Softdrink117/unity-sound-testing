@@ -15,6 +15,8 @@ namespace Softdrink{
 		void Update(){
 			if(Input.GetMouseButtonDown(0))_player.Play();
 			if(Input.GetMouseButtonDown(1))_player.PlayOneShot();
+			if(Input.GetKeyDown(KeyCode.Escape)) _player.HardStop();
+			if(Input.GetKeyDown(KeyCode.Space)) _player.Stop();
 		}
 	}
 }

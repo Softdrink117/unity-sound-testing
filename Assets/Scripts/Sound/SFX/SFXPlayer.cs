@@ -48,18 +48,18 @@ namespace Softdrink{
 		// Play the current selected SFX as a One Shot
 		public void PlayOneShot(){
 			ApplyProperties();
-			// _src.PlayOneShot(SFX.sources[0], SFX.settings.GetVolume());
 			_src.PlayOneShot(SFX.GetClip(), SFX.settings.GetVolume());
 		}
 
 		// Stop playing, if not in One Shot mode
 		public void Stop(){
-
+			_src.Stop();
 		}
 
 		// Immediately stop playing SFX, including One Shots
 		public void HardStop(){
-
+			_src.enabled = false;
+			_src.enabled = true;
 		}
 	}
 }
